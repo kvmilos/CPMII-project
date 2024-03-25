@@ -1,18 +1,17 @@
 import pygame
 import pymunk.pygame_util
-import character
-from simulation import Simulation, WIDTH, HEIGHT
+from simulation import Constants, Simulation
 
 class Screen():
     # class with the window, to display
     def __init__(self):
         pygame.init()
         pygame.display.set_caption("CPM II: Robot Simulation")
-        self.window = pygame.display.set_mode((WIDTH, HEIGHT))
+        self.window = pygame.display.set_mode((Constants.WIDTH, Constants.HEIGHT))
         self.window.fill("white")
 
     # function to run the pygame window
-    def run(self, width, height, simulation):
+    def run(self, simulation):
         window = self.window
         run = True
         clock = pygame.time.Clock()
@@ -46,4 +45,4 @@ class Screen():
 if __name__ == "__main__":
     simulation = Simulation()
     window = Screen()
-    window.run(WIDTH, HEIGHT, simulation)
+    window.run(simulation)
