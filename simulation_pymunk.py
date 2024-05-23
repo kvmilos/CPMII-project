@@ -1,16 +1,5 @@
 import pymunk
-from character import Robot, Wall
-
-# constants for the window
-class Constants:
-    WIDTH, HEIGHT = 800, 800
-
-    WALLS = [
-        (20, 20, WIDTH - 20, 20),
-        (20, 20, 20, HEIGHT - 20),
-        (20, HEIGHT - 20, WIDTH - 20, HEIGHT - 20),
-        (WIDTH - 20, 20, WIDTH - 20, HEIGHT - 20)
-    ]
+from classes import Robot, Wall, Constants
 
 class Simulation():
     # class to create the simulation environment

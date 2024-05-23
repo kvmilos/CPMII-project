@@ -1,6 +1,6 @@
 import pygame
 import pymunk.pygame_util
-from simulation import Constants, Simulation
+from simulation_pymunk import Constants, Simulation
 
 class Screen():
     # class with the window, to display

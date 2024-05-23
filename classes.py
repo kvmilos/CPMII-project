@@ -2,6 +2,18 @@ import pygame
 import pymunk
 import math
 
+
+class Constants:
+    WIDTH, HEIGHT = 800, 800
+
+    WALLS = [
+        (20, 20, WIDTH - 20, 20),
+        (20, 20, 20, HEIGHT - 20),
+        (20, HEIGHT - 20, WIDTH - 20, HEIGHT - 20),
+        (WIDTH - 20, 20, WIDTH - 20, HEIGHT - 20)
+    ]
+
+
 class Robot():
     # robot is a circle with a vision field
     def __init__(self, name, space, position = (100, 100), size = 30, angle = 0, color = (50, 50, 200, 100), vision_field_angle = 90, vision_field_range = 500):
@@ -15,14 +27,15 @@ class Robot():
         self.radius = size
         self.shape = pymunk.Circle(self.body, self.radius)
         self.shape.color = color
-        self.shape.elasticity = 0.00
         self.body.mass = 1
+        self.shape.collision_type = 1
+
         space.add(self.body, self.shape)
 
 
     def draw(self, window = None):
         self.window = window
-        # function to draw both the robor, and its vision field
+        # function to draw both the robot, and its vision field
         # draw the vision field as an arc
         start_angle = self.body.angle - math.radians(self.vision_angle // 2)
         end_angle = self.body.angle + math.radians(self.vision_angle // 2)
@@ -58,5 +71,8 @@ class Wall():
         self.body = pymunk.Body(body_type=pymunk.Body.STATIC)
         self.shape = pymunk.Segment(self.body, (start_x, start_y), (end_x, end_y), thickness)
         self.shape.elasticity = 0.00
+        self.shape.collision_type = 2
+        self.shape.friction = 1.0
+        self.shape.group = 2
         space.add(self.body, self.shape)
         
