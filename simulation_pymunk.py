@@ -1,10 +1,10 @@
 import pymunk
-from classes import Robot, Wall, Constants
+from classes import Robot, Wall, Constants, Food, Enemy
 
 class Simulation():
     # class to create the simulation environment
-    # function to run the simulation
     def run(self):
+    # function to run the simulation
         space = pymunk.Space()
         space.gravity = (0.0, 0.0)
         space.iterations = 30
@@ -13,11 +13,19 @@ class Simulation():
 
         for cords in Constants.WALLS:
             wall = Wall(space, *cords)
-            
 
-        # TODO: Add vision field for robot using segment_query_first (?)
-        # TODO: Add collision handler
-        # TODO: Add food(?)
-        # TODO: masks (?) for the robot to differentiate between walls, and food
+        #TODO: Add random food spawning
+        #TODO: Add enemy spawning
+        #TODO: Add enemy movement
+        #TODO (optional): Add random walls spawning
+        #TODO: Implement player-food collision - eating
+        #TODO: Implement player-enemy collision - dying/HP system (?)
+        #TODO: Add sprites for the robot, food, enemies
+        #TODO (optional): Add sounds
+        #TODO: Train an AI to play the game
+
+
+        Food(space, (400, 500))
+        Enemy(space, (500, 600))
 
         return space, robot
