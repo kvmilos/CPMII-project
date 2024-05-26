@@ -48,6 +48,7 @@ class Screen():
 
             # update points every frame
             simulation.update_points(dt)
+            self.display_points(simulation.points)
             
             # TODO: where to put this? also, what exact info do we need to output?
             # # info for future training (?)
