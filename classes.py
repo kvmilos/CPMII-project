@@ -1,12 +1,24 @@
 import pygame
 import pymunk
 import math
+import random
 
+
+def generate_colours(num_colors):
+    colors = []
+    for _ in range(num_colors):
+        r = random.randint(0, 255)
+        g = random.randint(0, 255)
+        b = random.randint(0, 255)
+        colors.append((r, g, b, 255))
+    return colors
 
 class Constants:
     # class to store constants
     # width and height of the window
     WIDTH, HEIGHT = 800, 800
+
+    N_ROBOTS = 10
 
     # movement and rotation speed
     MOVEMENT_SPEED = 200
@@ -61,10 +73,7 @@ class Constants:
         (WIDTH - WALLS_DISTANCE, WALLS_DISTANCE, WIDTH - WALLS_DISTANCE, HEIGHT - WALLS_DISTANCE)
     ]
 
-    COLORS2 = [(230, 25, 75, 0.8), (60, 180, 75, 0.8), (255, 225, 25, 0.8), (0, 130, 200, 0.8), (245, 130, 48, 0.8),
-               (145, 30, 180, 0.8), (70, 240, 240, 0.8), (240, 50, 230, 0.8), (210, 245, 60, 0.8), (250, 190, 212, 0.8),
-               (0, 128, 128, 0.8), (220, 190, 255, 0.8), (170, 110, 40, 0.8), (255, 250, 200, 0.8), (128, 0, 0, 0.8), (170, 255, 195, 0.8),
-               (128, 128, 0, 0.8), (255, 215, 180, 0.8), (0, 0, 128, 0.8), (128, 128, 128, 0.8), (100, 100, 160, 0.8), (0, 0, 0, 0.8)]
+    COLORS2 = generate_colours(N_ROBOTS).copy()
 
 class Robot():
     # robot is a circle with a vision field, the main object in the simulation
@@ -133,7 +142,7 @@ class Robot():
             x, y = query_info.point
             shape = query_info.shape
             what = shape.collision_type
-            if shape.color != self.shape.color and what == 3:
+            if what == 3 and shape.color != self.shape.color:
                 what = 0
         else:
             what = 0

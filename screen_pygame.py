@@ -43,7 +43,7 @@ class Screen():
 
         simulation = Simulation()
         simulations.append(simulation)
-        space = simulation.run(2, n_robots=10)
+        space = simulation.run(2, n_robots=Constants.N_ROBOTS)
         robots = simulation.get_robots()
        
         for genome_id, genome in genomes:
