@@ -8,7 +8,7 @@ import os
     #TODO: (optional) Add some 2D top-down sprites for the robot, food, enemies
     #TODO: (optional) Add sounds
 
-    #TODO: Train an AI to play the game
+
 agent_counter = 0
 
 class Screen():
@@ -70,7 +70,7 @@ class Screen():
             self.window.fill("white")
             for robot in robots:
                 _ = robot.draw(self.window)
-                #sensors = robot.draw(self.window)
+                sensors = robot.draw(self.window)
             
             
             # update points every frame
