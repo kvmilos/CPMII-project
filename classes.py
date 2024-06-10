@@ -14,16 +14,16 @@ class Constants:
     ENEMY_SPEED = 100
 
     # visual field
-    VISION_FIELD_ANGLE = 120
+    VISION_FIELD_ANGLE = 60
     VISION_FIELD_RANGE = 500
 
     # points
-    POINTS_GAINED_PER_FOOD = 20
+    POINTS_GAINED_PER_FOOD = 200
     POINTS_LOST_PER_TIME = 1
-    PER_WHAT_TIME_POINTS_ARE_LOST = 20
-    POINTS_LOST_PER_ENEMY = 5
-    POINTS_LOST_PER_WALL = 1
-    POINTS_LOST_PER_NOT_MOVING = 2
+    PER_WHAT_TIME_POINTS_ARE_LOST = 2
+    POINTS_LOST_PER_ENEMY = 50
+    POINTS_LOST_PER_WALL = 5
+    POINTS_LOST_PER_NOT_MOVING = 20
 
     # distance from window edges to place the walls
     WALLS_DISTANCE = 20
@@ -64,22 +64,6 @@ class Constants:
     COLORS2 = [(230, 25, 75, 0.8), (60, 180, 75, 0.8), (255, 225, 25, 0.8), (0, 130, 200, 0.8), (245, 130, 48, 0.8),
                (145, 30, 180, 0.8), (70, 240, 240, 0.8), (240, 50, 230, 0.8), (210, 245, 60, 0.8), (250, 190, 212, 0.8),
                (0, 128, 128, 0.8), (220, 190, 255, 0.8), (170, 110, 40, 0.8), (255, 250, 200, 0.8), (128, 0, 0, 0.8), (170, 255, 195, 0.8),
-               (128, 128, 0, 0.8), (255, 215, 180, 0.8), (0, 0, 128, 0.8), (128, 128, 128, 0.8), (100, 100, 160, 0.8), (0, 0, 0, 0.8),
-               (230, 25, 75, 0.8), (60, 180, 75, 0.8), (255, 225, 25, 0.8), (0, 130, 200, 0.8), (245, 130, 48, 0.8),
-               (145, 30, 180, 0.8), (70, 240, 240, 0.8), (240, 50, 230, 0.8), (210, 245, 60, 0.8), (250, 190, 212, 0.8),
-               (0, 128, 128, 0.8), (220, 190, 255, 0.8), (170, 110, 40, 0.8), (255, 250, 200, 0.8), (128, 0, 0, 0.8), (170, 255, 195, 0.8),
-               (128, 128, 0, 0.8), (255, 215, 180, 0.8), (0, 0, 128, 0.8), (128, 128, 128, 0.8), (100, 100, 160, 0.8), (0, 0, 0, 0.8),
-               (230, 25, 75, 0.8), (60, 180, 75, 0.8), (255, 225, 25, 0.8), (0, 130, 200, 0.8), (245, 130, 48, 0.8),
-               (145, 30, 180, 0.8), (70, 240, 240, 0.8), (240, 50, 230, 0.8), (210, 245, 60, 0.8), (250, 190, 212, 0.8),
-               (0, 128, 128, 0.8), (220, 190, 255, 0.8), (170, 110, 40, 0.8), (255, 250, 200, 0.8), (128, 0, 0, 0.8), (170, 255, 195, 0.8),
-               (128, 128, 0, 0.8), (255, 215, 180, 0.8), (0, 0, 128, 0.8), (128, 128, 128, 0.8), (100, 100, 160, 0.8), (0, 0, 0, 0.8),
-               (230, 25, 75, 0.8), (60, 180, 75, 0.8), (255, 225, 25, 0.8), (0, 130, 200, 0.8), (245, 130, 48, 0.8),
-               (145, 30, 180, 0.8), (70, 240, 240, 0.8), (240, 50, 230, 0.8), (210, 245, 60, 0.8), (250, 190, 212, 0.8),
-               (0, 128, 128, 0.8), (220, 190, 255, 0.8), (170, 110, 40, 0.8), (255, 250, 200, 0.8), (128, 0, 0, 0.8), (170, 255, 195, 0.8),
-               (128, 128, 0, 0.8), (255, 215, 180, 0.8), (0, 0, 128, 0.8), (128, 128, 128, 0.8), (100, 100, 160, 0.8), (0, 0, 0, 0.8),
-               (230, 25, 75, 0.8), (60, 180, 75, 0.8), (255, 225, 25, 0.8), (0, 130, 200, 0.8), (245, 130, 48, 0.8),
-               (145, 30, 180, 0.8), (70, 240, 240, 0.8), (240, 50, 230, 0.8), (210, 245, 60, 0.8), (250, 190, 212, 0.8),
-               (0, 128, 128, 0.8), (220, 190, 255, 0.8), (170, 110, 40, 0.8), (255, 250, 200, 0.8), (128, 0, 0, 0.8), (170, 255, 195, 0.8),
                (128, 128, 0, 0.8), (255, 215, 180, 0.8), (0, 0, 128, 0.8), (128, 128, 128, 0.8), (100, 100, 160, 0.8), (0, 0, 0, 0.8)]
 
 class Robot():
@@ -108,20 +92,21 @@ class Robot():
         self.window = window
 
         self.radars.clear()
-        for i in range(int(self.body.angle - (self.vision_angle/2)), int(self.body.angle + (self.vision_angle/2)), 3):
+        for i in range(int(self.body.angle - (self.vision_angle/2)), int(self.body.angle + (self.vision_angle/2)), 12):
             self.sense(i, self.space)
             
-        #for radar in self.radars:
-         #   pos = radar[0]
-          #  dist = radar[1]
-           # colour = Constants.COLOURS[radar[2]]
-           # radar.append(pos - self.body.position)
-           # pygame.draw.line(window, colour, (self.body.position.x, self.body.position.y), (pos[0], pos[1]), 1)
-           # pygame.draw.circle(window, colour, (int(pos[0]), int(pos[1])), 5)
+        for radar in self.radars:
+            pos = radar[0]
+            dist = radar[1]
+            colour = Constants.COLOURS[radar[2]]
+            radar.append(pos - self.body.position)
+            #pygame.draw.line(window, colour, (self.body.position.x, self.body.position.y), (pos[0], pos[1]), 1)
+            #pygame.draw.circle(window, colour, (int(pos[0]), int(pos[1])), 5)
         
         # draw space onto window
         self.space.debug_draw(pymunk.pygame_util.DrawOptions(window))
-        return [(pos.x, pos.y, dist, what) for _, dist, what, pos in self.radars]
+        
+        #return [(pos.x, pos.y, dist, what) for _, dist, what, pos in self.radars]
 
     def rotate(self, angle) -> None:
         # rotate the robot by angle
@@ -153,9 +138,21 @@ class Robot():
         else:
             what = 0
             x, y = end_x, end_y
-
+            
         dist = int(math.sqrt((x - self.body.position.x) ** 2 + (y - self.body.position.y) ** 2))
         self.radars.append([(x, y), dist, what])
+    
+    def get_data(self):
+        if self.radars == []:
+            for i in range(int(self.body.angle - (self.vision_angle/2)), int(self.body.angle + (self.vision_angle/2)), 12):
+                self.sense(i, self.space)
+        distances = [None] * len(self.radars)
+        objects = [None] * len(self.radars)
+        #print("SELFRADARS:", len(self.radars))
+        for i, radar in enumerate(self.radars):
+            distances[i] = int(radar[1])
+            objects[i] = int(radar[2])
+        return objects
 
 
 class Wall():
