@@ -1,30 +1,41 @@
 import pymunk
 import random
 from classes import Robot, Wall, Constants, Food, Enemy
+import neat
 
 class Simulation():
     # class to create the simulation environment
     def __init__(self):
-        self.points = 0
+        self.points = []
         self.timer = 0
+        self.timer2 = 0
         self.enemies = []
+        #self.robot = Robot
+        self.robots = []
+        self.walls = []
+        self.food_count = 0
+        self.food = []
+        self.robots_previous_positions = []
 
-
-    def run(self):
+    def run(self, seed_value, n_robots):
         # function to run the simulation
         self.space = pymunk.Space()
         self.space.gravity = (0.0, 0.0)
         self.space.iterations = 30
-        self.seed = random.Random()
+        self.seed = random.Random(seed_value)
         self.walls = self.spawn_random_walls()
 
         for cords in Constants.WALLS:
             wall = Wall(self.space, *cords)
 
+        for i in range(0, n_robots):
+            #color = Constants.COLORS2[i]
+            self.points.append(0)
+            self.spawn_robot(Constants.COLORS2[i])
         # spawn  random walls, initial food, and enemy 
-        self.spawn_random_walls()
+        
         self.spawn_food(10)
-        self.spawn_enemy(10)
+        #self.spawn_enemy(10)
 
         # collision handlers
         # robot-food
@@ -49,44 +60,40 @@ class Simulation():
     def spawn_robot(self, color):
         self.robots.append(Robot("robot", self.space, (Constants.WIDTH // 2, Constants.HEIGHT // 2), color=color))
         self.robots_previous_positions.append([(100, 100)])
-        self.food.append([])
 
     def spawn_random_walls(self, n=5):
         # function to add random walls
+        walls = []
         for _ in range(n):
-            start_x = random.randint(Constants.WALLS_DISTANCE, Constants.WIDTH - Constants.WALLS_DISTANCE)
-            start_y = random.randint(Constants.WALLS_DISTANCE, Constants.HEIGHT - Constants.WALLS_DISTANCE)
-            end_x = random.randint(start_x - 50, start_x + 50)
-            end_y = random.randint(start_y - 50, start_y + 50)
-            Wall(self.space, start_x, start_y, end_x, end_y, thickness = 8)
+            start_x = self.seed.randint(Constants.WALLS_DISTANCE, Constants.WIDTH - Constants.WALLS_DISTANCE)
+            start_y = self.seed.randint(Constants.WALLS_DISTANCE, Constants.HEIGHT - Constants.WALLS_DISTANCE)
+            end_x = self.seed.randint(start_x - 50, start_x + 50)
+            end_y = self.seed.randint(start_y - 50, start_y + 50)
+            #Wall(self.space, start_x, start_y, end_x, end_y, thickness = 8)
+            walls.append(Wall(self.space, start_x, start_y, end_x, end_y, thickness = 8))
+        return walls
 
     def spawn_food(self, shift):
         # function to add random food
-        #if len(self.food) == 0:
-        #while True:
-            for robot in self.robots:
-                index = self.robots.index(robot)
-                if self.food[index] == []:
-            # generate random position in between walls
-                    x = random.randint(Constants.WALLS_DISTANCE + shift, Constants.WIDTH - Constants.WALLS_DISTANCE - shift)
-                    y = random.randint(Constants.WALLS_DISTANCE + shift, Constants.HEIGHT - Constants.WALLS_DISTANCE - shift)
+        if len(self.food) == 0:
+            while True:
+                # generate random position in between walls
+                x = self.seed.randint(Constants.WALLS_DISTANCE + shift, Constants.WIDTH - Constants.WALLS_DISTANCE - shift)
+                y = self.seed.randint(Constants.WALLS_DISTANCE + shift, Constants.HEIGHT - Constants.WALLS_DISTANCE - shift)
 
-            # create a temp body to check for overlap
-                    temp_body = pymunk.Body(body_type=pymunk.Body.STATIC)
-                    temp_body.position = (x, y)
-                    temp_shape = pymunk.Circle(temp_body, Constants.FOOD_SIZE)
+                # create a temp body to check for overlap
+                temp_body = pymunk.Body(body_type=pymunk.Body.STATIC)
+                temp_body.position = (x, y)
+                temp_shape = pymunk.Circle(temp_body, Constants.FOOD_SIZE)
 
-            # check for overlap
-                    overlap = self.space.shape_query(temp_shape)
+                # check for overlap
+                overlap = self.space.shape_query(temp_shape)
 
-            # if no overlap, add the food
-                    if not overlap:
-                #Food(self.space, (x, y))
-            #for robot in self.robots:
-              #  index = self.robots.index(robot)
-              #  if self.food[index] == []:
-                        self.food[index].append(Food(self.space, (x, y), Constants.COLORS2[index]))
-            #print(self.food[0])
+                # if no overlap, add the food
+                if not overlap:
+                    #Food(self.space, (x, y))
+                    self.food.append(Food(self.space, (x, y)))
+                    break
                     
 
     def spawn_enemy(self, shift):
@@ -116,28 +123,24 @@ class Simulation():
     def robot_eat_food(self, arbiter, space, data):
         # remove the food from the space
         index = 0
-        food_shape = arbiter.shapes[1]
         for robot in self.robots:
             if robot.shape == arbiter.shapes[0]:
                 index = self.robots.index(robot)
-                #print(self.food[index])
-                if robot.shape.color == food_shape.color and food_shape.body.position == self.food[index][0].body.position:
-                    del self.food[index][0]
-                    space.remove(food_shape, food_shape.body)
-                    self.points[index] += Constants.POINTS_GAINED_PER_FOOD
-       # if len(self.food) > 0:
-          #  tmp = []
-        #    for food in self.food:
-          #      tmp.append(food[0].body.position)
-          #  if food_shape.body.position in tmp:
-            #    del self.food[tmp.index(food_shape.body.position)]
-
+        food_shape = arbiter.shapes[1]
         
+        if len(self.food) > 0:
+            tmp = []
+            for food in self.food:
+                tmp.append(food.body.position)
+            if food_shape.body.position in tmp:
+                del self.food[tmp.index(food_shape.body.position)]
+
+        space.remove(food_shape, food_shape.body)
         # add a new food in a random position
         self.spawn_food(10)
 
         # increase the points
-        
+        self.points[index] += Constants.POINTS_GAINED_PER_FOOD
         return False
 
     def robot_hit_enemy(self, arbiter, space, data):
@@ -163,7 +166,7 @@ class Simulation():
     def robot_hit_wall(self, arbiter, space, data):
          # Decrease points by 5
         #if self.points - 5 >= 0:
-        self.points[self.robots.index[arbiter[0]]] -= 100
+        self.points[self.robots.index[arbiter[0]]] -= 5
         #else:
          #   self.points = 0
         return True
@@ -175,8 +178,8 @@ class Simulation():
                 direction = direction.normalized() * Constants.ENEMY_SPEED
                 enemy.body.velocity = direction
 
-
     def update_points(self, dt):
+        #print(self.points)
         # decrease a point every X seconds
         self.timer += dt
         if self.timer >= Constants.PER_WHAT_TIME_POINTS_ARE_LOST:
@@ -191,9 +194,9 @@ class Simulation():
                 for j, radar in enumerate(self.robots[index].radars):
                     tmp.append(radar[2])
                 if set(tmp) == {2}:
-                    self.points[index] -= 1
+                    self.points[index] -= 10
                 elif 3 in set(tmp):
-                    self.points[index] += 1
+                    self.points[index] += 10 
                 self.timer = 0
 
     def update_position(self, dt):
