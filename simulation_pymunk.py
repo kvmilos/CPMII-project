@@ -3,6 +3,8 @@ import random
 from classes import Robot, Wall, Constants, Food, Enemy
 import neat
 
+seed_value = 1
+
 class Simulation():
     # class to create the simulation environment
     def __init__(self):
@@ -17,6 +19,7 @@ class Simulation():
         self.food = []
         self.robots_previous_positions = []
 
+    def run(self, seed_value, n_robots):
         # function to run the simulation
         self.space = pymunk.Space()
         self.space.gravity = (0.0, 0.0)
