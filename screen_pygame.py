@@ -8,13 +8,12 @@ import os
     #TODO: (optional) Add some 2D top-down sprites for the robot, food, enemies
     #TODO: (optional) Add sounds
 
-
+# New variables to manage skipping generations
 agent_counter = 0
-skip_generations = 0  # New variable to hold the number of generations to skip
-skipping = False      # New variable to indicate if skipping is active
+skip_generations = 0
+skipping = False
 
 class Screen():
-    # class with the window, to display
     def __init__(self):
         pygame.init()
         pygame.display.set_caption("CPM II: Robot Simulation")
@@ -28,7 +27,6 @@ class Screen():
         self.slider_value = 0
 
     def run(self, genomes, config):
-        # function to run the pygame window
         global agent_counter, skip_generations, skipping
 
         window = self.window
@@ -36,7 +34,6 @@ class Screen():
         clock = pygame.time.Clock()
         fps = 60
         dt = 10 / fps
-
         #simulation = Simulation()
         #space = simulation.run()
         #robot = simulation.get_robot()
@@ -53,9 +50,7 @@ class Screen():
         robots = simulation.get_robots()
 
         for genome_id, genome in genomes:
-
             environments.append(space)
-            #robots.append(robot)
             ge.append(genome)
             net = neat.nn.FeedForwardNetwork.create(genome, config)
             nets.append(net)
@@ -83,6 +78,22 @@ class Screen():
                 agent_counter += 1
                 if skip_generations <= 0:
                     skipping = False
+                    simulation = Simulation()
+                    simulations.append(simulation)
+                    space = simulation.run(2, n_robots=Constants.N_ROBOTS)
+                    robots = simulation.get_robots()
+                    environments.append(space)
+
+                # Update genomes
+                for genome_id, genome in genomes:
+                    ge.append(genome)
+                    net = neat.nn.FeedForwardNetwork.create(genome, config)
+                    nets.append(net)
+                    genome.fitness = 0
+
+            window.fill("black")
+            for simulation in simulations:
+                simulation.space.step(dt)
                 for robot in robots:
                     index = robots.index(robot)
                     data = robot.get_data()
@@ -190,7 +201,7 @@ def ai_run(config_path):
     )
     pop = neat.Population(config)
     window = Screen()
-    lol = pop.run(window.run, 1000)
+    pop.run(window.run, 1000)
     pop.add_reporter(neat.StdOutReporter(True))
     stats = neat.StatisticsReporter()
     pop.add_reporter(stats)
