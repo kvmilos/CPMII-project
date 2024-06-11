@@ -8,7 +8,6 @@ import os
     #TODO: (optional) Add some 2D top-down sprites for the robot, food, enemies
     #TODO: (optional) Add sounds
 
-
 agent_counter = 0
 
 class Screen():
@@ -47,9 +46,7 @@ class Screen():
         robots = simulation.get_robots()
        
         for genome_id, genome in genomes:
-
             environments.append(space)
-            #robots.append(robot)
             ge.append(genome)
             net = neat.nn.FeedForwardNetwork.create(genome, config)
             nets.append(net)
@@ -81,13 +78,6 @@ class Screen():
 
             self.display_points(simulation.points) 
             self.display_generation(agent_counter)         
-           # TODO: where to put this? also, what exact info do we need to output?
-            # # info for future training (?)
-            # info = [robot.body.velocity.x, robot.body.velocity.y, sensors]
-            # print(info) 
-
-            # move the enemies
-            #simulation.move_enemies()
 
             pygame.display.update()
             space.step(dt)
@@ -95,39 +85,30 @@ class Screen():
 
                 
             seconds = (pygame.time.get_ticks() - start_ticks)/1000
-            if seconds > 20:
+            if seconds > 30:
                 break
-            for robot in robots:
-                index = robots.index(robot)
-                #robot = simulation.get_robot()
+
+            for i, robot in enumerate(robots):
                 data = robot.get_data()
-                output = nets[index].activate(data)
+                output = nets[i].activate(data)
                 choice = output.index(max(output))
                 if choice == 0:
-                    robot.move(0.1)
+                    robot.move(0.2)
                 elif choice == 1:
+                    robot.decelerate(0.2)
+                elif choice == 2:
                     robot.rotate(1)
                 else:
                     robot.rotate(-1)
             
-            #print(len(genomes))
-            for robot in robots:
-                index = robots.index(robot)
-                tmp = genomes[index][1].fitness
+        for i, robot in enumerate(robots):
+                #tmp = genomes[i][1].fitness
+                #tmp += simulation.points[i]
+            ge[i].fitness = simulation.points[i]
 
-                tmp += simulation.points[index]
-        #print("TMP new", tmp)
-        #print()
-                ge[index].fitness += simulation.points[index]/100
-        
-            #print('GENOMES:', genomes[index][1].fitness)
-        for robot in robots:
-            index = robots.index(robot)
-            print(ge[index].fitness)
+        for i, robot in enumerate(robots):
+            print(ge[i].fitness)
         print()
-        #print(len(genomes))
-        #print(simulation.points)
-    #pygame.quit()
 
     def display_points(self, points):
         # render the points
@@ -141,7 +122,7 @@ class Screen():
     
     def display_generation(self, agent_counter):
         points_surface = self.font.render(f"Generation: {agent_counter}", True, "white")
-        self.window.blit(points_surface, (570, 5))
+        self.window.blit(points_surface, (300, 5))
 
 def ai_run(config_path):
     config = neat.config.Config(
