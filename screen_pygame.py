@@ -8,6 +8,7 @@ import os
     #TODO: (optional) Add some 2D top-down sprites for the robot, food, enemies
     #TODO: (optional) Add sounds
 
+
 # New variables to manage skipping generations
 agent_counter = 0
 skip_generations = 0
@@ -143,40 +144,30 @@ class Screen():
             space.step(dt)
             clock.tick(fps)
 
-            seconds = (pygame.time.get_ticks() - start_ticks) / 1000
-            if seconds > 20:
+            seconds = (pygame.time.get_ticks() - start_ticks)/1000
+            if seconds > 40:
                 break
 
-            for robot in robots:
-                index = robots.index(robot)
+            for i, robot in enumerate(robots):
                 data = robot.get_data()
-                output = nets[index].activate(data)
+                output = nets[i].activate(data)
                 choice = output.index(max(output))
                 if choice == 0:
-                    robot.move(0.1)
+                    robot.move(1)
                 elif choice == 1:
-                    robot.rotate(1)
+                    robot.rotate(-2)
                 else:
-                    robot.rotate(-1)
+                    robot.rotate(2)
+                #ge[i].fitness += simulation.points[i]/100
+            
+        for i, robot in enumerate(robots):
+                #tmp = genomes[i][1].fitness
+                #tmp += simulation.points[i]
+            ge[i].fitness = simulation.points[i]
 
-            #print(len(genomes))
-            for robot in robots:
-                index = robots.index(robot)
-                tmp = genomes[index][1].fitness
-
-                tmp += simulation.points[index]
-        #print("TMP new", tmp)
-        #print()
-                ge[index].fitness += simulation.points[index]/100
-        
-            #print('GENOMES:', genomes[index][1].fitness)
-        for robot in robots:
-            index = robots.index(robot)
-            print(ge[index].fitness)
+        for i, robot in enumerate(robots):
+            print(ge[i].fitness)
         print()
-        #print(len(genomes))
-        #print(simulation.points)
-    #pygame.quit()
 
     def display_points(self, points):
         points_surface = self.font.render("Points:", True, "white")
@@ -188,7 +179,7 @@ class Screen():
 
     def display_generation(self, agent_counter):
         points_surface = self.font.render(f"Generation: {agent_counter}", True, "white")
-        self.window.blit(points_surface, (570, 5))
+        self.window.blit(points_surface, (Constants.WIDTH-200, 5))
 
 
 def ai_run(config_path):
