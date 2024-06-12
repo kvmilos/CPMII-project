@@ -85,7 +85,7 @@ class Screen():
 
                 
             seconds = (pygame.time.get_ticks() - start_ticks)/1000
-            if seconds > 30:
+            if seconds > 40:
                 break
 
             for i, robot in enumerate(robots):
@@ -93,13 +93,12 @@ class Screen():
                 output = nets[i].activate(data)
                 choice = output.index(max(output))
                 if choice == 0:
-                    robot.move(0.2)
+                    robot.move(1)
                 elif choice == 1:
-                    robot.decelerate(0.2)
-                elif choice == 2:
-                    robot.rotate(1)
+                    robot.rotate(-2)
                 else:
-                    robot.rotate(-1)
+                    robot.rotate(2)
+                #ge[i].fitness += simulation.points[i]/100
             
         for i, robot in enumerate(robots):
                 #tmp = genomes[i][1].fitness
@@ -122,7 +121,7 @@ class Screen():
     
     def display_generation(self, agent_counter):
         points_surface = self.font.render(f"Generation: {agent_counter}", True, "white")
-        self.window.blit(points_surface, (300, 5))
+        self.window.blit(points_surface, (Constants.WIDTH-200, 5))
 
 def ai_run(config_path):
     config = neat.config.Config(

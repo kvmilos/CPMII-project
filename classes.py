@@ -20,7 +20,7 @@ def generate_colours(num_colors):
 class Constants:
     # class to store constants
     # width and height of the window
-    WIDTH, HEIGHT = 500, 500
+    WIDTH, HEIGHT = 800, 800
 
     N_ROBOTS = 10
 
@@ -37,10 +37,10 @@ class Constants:
     # points
     POINTS_GAINED_PER_FOOD = 50
     POINTS_LOST_PER_TIME = 0
-    PER_WHAT_TIME_POINTS_ARE_LOST = 20
+    PER_WHAT_TIME_POINTS_ARE_LOST = 10
     POINTS_LOST_PER_ENEMY = 5
-    POINTS_LOST_PER_WALL = 5
-    POINTS_LOST_PER_NOT_MOVING = 2
+    POINTS_LOST_PER_WALL = 10
+    POINTS_LOST_PER_NOT_MOVING = 5
 
     # distance from window edges to place the walls
     WALLS_DISTANCE = 20
@@ -105,7 +105,7 @@ class Robot():
         # # function to draw both the robot, and its vision field
         self.window = window
 
-        #self.radars.clear()
+        self.radars.clear()
        # for i in range(int(self.body.angle - (self.vision_angle/2)), int(self.body.angle + (self.vision_angle/2)), 12):
            # self.sense(i, self.space)
             
@@ -125,6 +125,8 @@ class Robot():
     def rotate(self, angle) -> None:
         # rotate the robot by angle
         self.body.angle = self.body.angle + math.radians(angle) * Constants.ROTATION_SPEED
+        velocity = pow(self.body.velocity[0]**2 + self.body.velocity[1]**2, 1/2)
+        self.body.velocity = (velocity * math.cos(self.body.angle), velocity * math.sin(self.body.angle))
 
     def move(self, dist) -> None:
         # apply force to the robot to move it
@@ -178,15 +180,13 @@ class Robot():
             for i in range(int(self.body.angle - (self.vision_angle/2)), int(self.body.angle + (self.vision_angle/2)), 12):
                 self.sense(i, self.space)
         #distances = [None] * len(self.radars)
-        objects = []
+        objects = [None] * len(self.radars)
         for i, radar in enumerate(self.radars):
             #distances[i] = int(radar[1])
             if int(radar[2]) == 2:
-                objects.append(-1)
+                objects[i] = (-1)
             else:
-                objects.append(int(radar[2]))
-        objects.append(self.body.velocity[0])
-        objects.append(self.body.velocity[1])
+                objects[i] = (int(radar[2]))
         return objects
 
 

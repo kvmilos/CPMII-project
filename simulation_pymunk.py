@@ -32,7 +32,7 @@ class Simulation():
         self.space.gravity = (0.0, 0.0)
         self.space.iterations = 30
         #self.seed = random.Random(seed_value)
-        #self.walls = self.spawn_random_walls()
+        self.walls = self.spawn_random_walls()
 
         for cords in Constants.WALLS:
             wall = Wall(self.space, *cords)
