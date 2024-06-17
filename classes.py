@@ -24,6 +24,7 @@ class Constants:
 
     N_ROBOTS = 10
 
+    GENERATION_TIME_LIMIT = 10
     # movement and rotation speed
     MOVEMENT_SPEED = 200
     ROTATION_SPEED = 2
@@ -139,6 +140,7 @@ class Robot():
         self.body.apply_force_at_world_point(direction * force, self.body.position)
 
     def decelerate(self, dist) -> None:
+        #Decelerating robot but it's not used in the final version
         speed = pow(self.body.velocity[0]**2 + self.body.velocity[1]**2, 1/2)
         force = (dist * speed)
         if self.body.velocity[0] != 0:
