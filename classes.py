@@ -133,7 +133,7 @@ class Robot():
         # apply force to the robot to move it
         speed = pow(self.body.velocity[0]**2 + self.body.velocity[1]**2, 1/2)
         if speed > Constants.MAX_SPEED:
-            force = 0
+            force = 0 ###
         else:
             force = dist * Constants.MOVEMENT_SPEED
         direction = pymunk.Vec2d(math.cos(self.body.angle), math.sin(self.body.angle))
