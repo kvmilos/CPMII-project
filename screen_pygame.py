@@ -75,11 +75,6 @@ class Screen():
                 agent_counter += 1
                 if skip_generations <= 0:
                     skipping = False
-                    simulation = Simulation()
-                    simulations.append(simulation)
-                    space = simulation.run(2, n_robots=Constants.N_ROBOTS)
-                    robots = simulation.get_robots()
-                    environments.append(space)
 
                 # Update genomes
                 for genome_id, genome in genomes:
@@ -87,6 +82,11 @@ class Screen():
                     net = neat.nn.FeedForwardNetwork.create(genome, config)
                     nets.append(net)
                     genome.fitness = 0
+                
+                simulation = Simulation()
+                simulations.append(simulation)
+                space = simulation.run(2, n_robots=len(genomes))
+                robots = simulation.get_robots()
 
                 window.fill("black")
                 for simulation in simulations:
