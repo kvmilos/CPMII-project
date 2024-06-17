@@ -23,8 +23,8 @@ class Constants:
     WIDTH, HEIGHT = 800, 800
 
     N_ROBOTS = 10
+    GENERATION_TIME_LIMIT = 20
 
-    GENERATION_TIME_LIMIT = 10
     # movement and rotation speed
     MOVEMENT_SPEED = 200
     ROTATION_SPEED = 2
@@ -133,7 +133,7 @@ class Robot():
         # apply force to the robot to move it
         speed = pow(self.body.velocity[0]**2 + self.body.velocity[1]**2, 1/2)
         if speed > Constants.MAX_SPEED:
-            return
+            force = 0
         else:
             force = dist * Constants.MOVEMENT_SPEED
         direction = pymunk.Vec2d(math.cos(self.body.angle), math.sin(self.body.angle))
