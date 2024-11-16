@@ -6,11 +6,15 @@ import random
 
 def generate_colours(num_colors):
     colors = []
-    for _ in range(num_colors):
+    for i in range(0, num_colors):
         r = random.randint(0, 255)
         g = random.randint(0, 255)
         b = random.randint(0, 255)
-        colors.append((r, g, b, 255))
+        if (r, g, b, 255) in colors:
+            i -= 1
+        else:
+            colors.append((r, g, b, 255))
+
     return colors
 
 class Constants:
@@ -19,23 +23,25 @@ class Constants:
     WIDTH, HEIGHT = 800, 800
 
     N_ROBOTS = 10
+    GENERATION_TIME_LIMIT = 20
 
     # movement and rotation speed
     MOVEMENT_SPEED = 200
     ROTATION_SPEED = 2
     ENEMY_SPEED = 100
+    MAX_SPEED = 15
 
     # visual field
     VISION_FIELD_ANGLE = 60
     VISION_FIELD_RANGE = 500
 
     # points
-    POINTS_GAINED_PER_FOOD = 200
-    POINTS_LOST_PER_TIME = 1
-    PER_WHAT_TIME_POINTS_ARE_LOST = 2
-    POINTS_LOST_PER_ENEMY = 50
-    POINTS_LOST_PER_WALL = 5
-    POINTS_LOST_PER_NOT_MOVING = 20
+    POINTS_GAINED_PER_FOOD = 50
+    POINTS_LOST_PER_TIME = 0
+    PER_WHAT_TIME_POINTS_ARE_LOST = 10
+    POINTS_LOST_PER_ENEMY = 5
+    POINTS_LOST_PER_WALL = 10
+    POINTS_LOST_PER_NOT_MOVING = 5
 
     # distance from window edges to place the walls
     WALLS_DISTANCE = 20
@@ -72,7 +78,6 @@ class Constants:
         (WALLS_DISTANCE, HEIGHT - WALLS_DISTANCE, WIDTH - WALLS_DISTANCE, HEIGHT - WALLS_DISTANCE),
         (WIDTH - WALLS_DISTANCE, WALLS_DISTANCE, WIDTH - WALLS_DISTANCE, HEIGHT - WALLS_DISTANCE)
     ]
-
     COLORS2 = generate_colours(N_ROBOTS).copy()
 
 class Robot():
@@ -83,6 +88,7 @@ class Robot():
         self.body = pymunk.Body(1, 1)
         self.body.position = position
         self.body.angle = math.radians(angle)
+        #self.body.velocity = (0,0)
         self.space = space
         self.vision_angle = vision_field_angle
         self.vision_range = vision_field_range
@@ -101,14 +107,14 @@ class Robot():
         self.window = window
 
         self.radars.clear()
-        for i in range(int(self.body.angle - (self.vision_angle/2)), int(self.body.angle + (self.vision_angle/2)), 12):
-            self.sense(i, self.space)
+       # for i in range(int(self.body.angle - (self.vision_angle/2)), int(self.body.angle + (self.vision_angle/2)), 12):
+           # self.sense(i, self.space)
             
-        for radar in self.radars:
-            pos = radar[0]
-            dist = radar[1]
-            colour = Constants.COLOURS[radar[2]]
-            radar.append(pos - self.body.position)
+        #for radar in self.radars:
+           # pos = radar[0]
+            #dist = radar[1]
+            #colour = Constants.COLOURS[radar[2]]
+            #radar.append(pos - self.body.position)
             #pygame.draw.line(window, colour, (self.body.position.x, self.body.position.y), (pos[0], pos[1]), 1)
             #pygame.draw.circle(window, colour, (int(pos[0]), int(pos[1])), 5)
         
@@ -120,11 +126,28 @@ class Robot():
     def rotate(self, angle) -> None:
         # rotate the robot by angle
         self.body.angle = self.body.angle + math.radians(angle) * Constants.ROTATION_SPEED
+        velocity = pow(self.body.velocity[0]**2 + self.body.velocity[1]**2, 1/2)
+        self.body.velocity = (velocity * math.cos(self.body.angle), velocity * math.sin(self.body.angle))
 
     def move(self, dist) -> None:
         # apply force to the robot to move it
-        force = dist * Constants.MOVEMENT_SPEED
+        speed = pow(self.body.velocity[0]**2 + self.body.velocity[1]**2, 1/2)
+        if speed > Constants.MAX_SPEED:
+            force = 0 ###
+        else:
+            force = dist * Constants.MOVEMENT_SPEED
         direction = pymunk.Vec2d(math.cos(self.body.angle), math.sin(self.body.angle))
+        self.body.apply_force_at_world_point(direction * force, self.body.position)
+
+    def decelerate(self, dist) -> None:
+        #Decelerating robot but it's not used in the final version
+        speed = pow(self.body.velocity[0]**2 + self.body.velocity[1]**2, 1/2)
+        force = (dist * speed)
+        if self.body.velocity[0] != 0:
+            angle = math.degrees(math.atan(self.body.velocity[1]/self.body.velocity[0])) + 180
+        else:
+            angle = 90
+        direction = pymunk.Vec2d(math.cos(angle), math.sin(angle))
         self.body.apply_force_at_world_point(direction * force, self.body.position)
 
     def sense(self, degree, space):
@@ -144,6 +167,9 @@ class Robot():
             what = shape.collision_type
             if what == 3 and shape.color != self.shape.color:
                 what = 0
+                for query in self.space.shape_query(shape):
+                    if query[0].color == self.shape.color:
+                        what = 3
         else:
             what = 0
             x, y = end_x, end_y
@@ -155,12 +181,14 @@ class Robot():
         if self.radars == []:
             for i in range(int(self.body.angle - (self.vision_angle/2)), int(self.body.angle + (self.vision_angle/2)), 12):
                 self.sense(i, self.space)
-        distances = [None] * len(self.radars)
+        #distances = [None] * len(self.radars)
         objects = [None] * len(self.radars)
-        #print("SELFRADARS:", len(self.radars))
         for i, radar in enumerate(self.radars):
-            distances[i] = int(radar[1])
-            objects[i] = int(radar[2])
+            #distances[i] = int(radar[1])
+            if int(radar[2]) == 2:
+                objects[i] = (-1)
+            else:
+                objects[i] = (int(radar[2]))
         return objects
 
 
